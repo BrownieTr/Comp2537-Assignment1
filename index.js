@@ -10,7 +10,7 @@ const port = process.env.PORT || 3000;
 const app = express();
 const Joi = require("joi");
 
-const expireTime = 30 * (24 * 60 * 60 * 1000); //expires after 30 day  (hours * minutes * seconds * millis)
+const expireTime = 60 * 60 * 1000; //expires after 1 hour (minutes * seconds * millis)
 
 /* secret information section */
 const mongodb_host = process.env.MONGODB_HOST;
@@ -49,13 +49,18 @@ app.get('/', (req,res) => {
             <button onclick=\"window.location.href='/members'\">Go to Members Area</button><br>
             <button onclick=\"window.location.href='/logout'\">Logout</button>
             `);
+    } else {
+        res.send(`
+            <button onclick=\"window.location.href='/signup'\">Signed up</button><br>
+            <button onclick=\"window.location.href='/login'\">Login</button>
+            `);
     }
-
-    res.send(`
-        <button onclick=\"window.location.href='/signup'\">Signed up</button><br>
-        <button onclick=\"window.location.href='/login'\">Login</button>
-        `);
 });
+
+app.get('/logout', (req, res) => {
+    req.session.destroy();
+    res.redirect('/');
+})
 
 app.get('/signup', (req, res) => {
     res.send(`
@@ -203,7 +208,16 @@ app.post('/loginSubmit', async (req, res) => {
 })
 
 app.get('/members', (req, res) => {
-    res.send("<h1>Member only page</h1>");
+    if (req.session.authenticated) {
+        const randomNum = Math.floor(Math.random() * 3);
+        res.send(`
+            Hello, ` + req.session.username +`.<br><br>
+            <img src='/image` + randomNum + `.gif' style='width:250px;'><br>
+            <button onclick=\"window.location.href='/logout'\">Logout</button>            
+            `);
+    } else {
+        res.redirect('/');
+    }
 })
 
 app.use(express.static(__dirname + "/public"))
