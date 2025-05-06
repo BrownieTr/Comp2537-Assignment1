@@ -190,6 +190,7 @@ app.post('/loginSubmit', async (req, res) => {
             User email is not registered yet<br><br>
             <a href="/login">Try again</a>
             `)
+        return;
     } 
     
     if (await bcrypt.compare(password, userFound[0].password)) {
