@@ -187,7 +187,7 @@ app.post('/loginSubmit', async (req, res) => {
     if (userFound.length != 1) {
         console.log("User not found");
         res.send(`
-            User password is not registered yet<br><br>
+            User email is not registered yet<br><br>
             <a href="/login">Try again</a>
             `)
     } 
